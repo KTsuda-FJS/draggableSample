@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="app">
+      <v-app>
+        <v-main>
+          <v-container>
+            <v-row>
+              <v-col
+              >
+                <v-card
+                  outlined
+                >
+                  <v-card-actions>
+                    <p class="text-h3 text--primary">
+                      {{this.date}} DISA D
+                    </p>
+                    <v-btn
+                      class="ml-4 mt-n3"
+                      icon
+                      x-large
+                      color="warning"
+                    >
+                      <v-icon>mdi-reload</v-icon>
+                    </v-btn>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      rounded
+                      color="primary"
+                      large
+                    >
+                      登録
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col
+                cols="7"
+              >
+                <v-card
+                  outlined
+                >
+
+                  <v-simple-table>
+                    <template v-slot:default>
+                      <thead>
+                        <tr>
+                          <th>
+                            <v-icon>
+                              mdi-arrow-right
+                            </v-icon>
+                          </th>
+                          <th>
+                            時刻
+                          </th>
+                          <th class="text-left">
+                            部番
+                          </th>
+                          <th>
+                            枠数
+                          </th>
+                          <th>
+                            数量
+                          </th>
+                          <th>
+                            中子状況
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody id="dragTable">
+                        <tr
+                          v-for="(plan, index) in plans"
+                          :key="plan.id"
+                          class="sortableRow sortHandle handle"
+                        >
+                          <td>
+                            <v-btn
+                              class=""
+                              fab
+                              depressed
+                              x-small
+                              color="error"
+                              @click="addPendingList(index)"
+                            >
+                              <v-icon>
+                                mdi-arrow-right
+                              </v-icon>
+                            </v-btn>
+                          </td>
+                          <td>{{ plan.time }}</td>
+                          <td>{{ plan.product_no }}</td>
+                          <td>
+                            <v-text-field
+                              class="my-2"
+                              dense
+                              outlined
+                              hide-details=true
+                              v-model='plan.flame'
+                            ></v-text-field>
+                          </td>
+                          <td>
+                            <v-text-field
+                              class="my-2"
+                              dense
+                              outlined
+                              hide-details=true
+                              v-model='plan.qty'
+                            ></v-text-field>
+                          </td>
+                          <td>{{ plan.status }}</td>
+                        </tr>
+                      </tbody>
+                    </template>
+                  </v-simple-table>
+
+                </v-card>
+              </v-col>
+              <v-col
+                cols="5"
+              >
+                <v-row>
+                  <v-col>
+                    <v-card
+                      outlined
+                    >
+                      <v-card-subtitle
+                      >
+                        保留枠
+                      </v-card-subtitle>
+                      <v-simple-table>
+                        <template v-slot:default>
+                          <thead>
+                            <tr>
+                              <th>
+                                <v-icon>
+                                  mdi-arrow-left
+                                </v-icon>
+                              </th>
+                              <th class="text-left">
+                                部番
+                              </th>
+                              <th class="text-right">
+                                枠数
+                              </th>
+                              <th class="text-right">
+                                数量
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody id="dragTable2">
+                            <tr
+                              v-for="(plan, index) in pendings"
+                              :key="plan.product_no"
+                              class="sortableRow sortHandle handle"
+                            >
+                              <td>
+                                <v-btn
+                                  class=""
+                                  fab
+                                  depressed
+                                  x-small
+                                  color="success"
+                                  @click="removePendingList(index)"
+                                >
+                                  <v-icon>
+                                    mdi-arrow-left
+                                  </v-icon>
+                                </v-btn>
+                              </td>
+                              <td>{{ plan.product_no }}</td>
+                              <td class="text-right">{{ plan.flame }}</td>
+                              <td class="text-right">{{ plan.qty }}</td>
+                            </tr>
+                          </tbody>
+                        </template>
+                      </v-simple-table>
+                    </v-card>
+                  </v-col>
+                </v-row>
+
+                <v-row
+                >
+                  <v-col>
+                    <v-card
+                      outlined
+                    >
+                      <v-card-subtitle>
+                        追加枠
+                      </v-card-subtitle>
+
+                      <v-simple-table>
+                        <template v-slot:default>
+                          <thead>
+                            <tr>
+                              <th>
+                                <v-icon>
+                                  mdi-arrow-left
+                                </v-icon>
+                              </th>
+                              <th class="text-left">
+                                部番
+                              </th>
+                              <th class="text-right">
+                                枠数
+                              </th>
+                              <th class="text-right">
+                                数量
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                          </tbody>
+                        </template>
+                      </v-simple-table>
+                    </v-card>
+                  </v-col>
+                </v-row>
+
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-main>
+      </v-app>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/ja.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.8.4/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.20.0/vuedraggable.umd.min.js"></script>
+
+    <!-- Vuetifyを初期化する -->
+    <script>
+
+        moment.locale("ja", {
+          weekdays: ["日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日"],
+          weekdaysShort: ["日", "月", "火", "水", "木", "金", "土"]
+        });
+
+        var vm = new Vue({
+            el: '#app',
+            vuetify: new Vuetify(),
+            data: {
+              date: ( moment().format('YYYY/MM/DD(ddd)') ),
+              plans: [],
+              pendings: [],
+              dialog: false,
+              itemKeys: new WeakMap(),
+              currentItemKey: 0,
+            },
+            created: function () {
+
+              this.plans = [  //TODO シートから取得
+                { "id": 1, "time": "9:00",  "product_no": "0B39767AK-1/2-000-N0S01",  "flame": "96",  "qty": "1536",  "status": "OK"}, 
+                { "id": 2, "time": "9:00",  "product_no": "448/20069AK-0-000-N0S01",  "flame": "33",  "qty": "132",  "status": ""}, 
+                { "id": 3, "time": "9:00",  "product_no": "0B38281AK-1/2-000-N0S01",  "flame": "64",  "qty": "1280",  "status": "OK"}, 
+                { "id": 4, "time": "9:00",  "product_no": "448/20038AK-0-000-N0S01",  "flame": "33",  "qty": "132",  "status": "4/4 18:33"}, 
+                { "id": 5, "time": "9:15",  "product_no": "1H1/0087/88AK-0-000-N1S01",  "flame": "70",  "qty": "840",  "status": "OK"}, 
+                { "id": 6, "time": "9:15",  "product_no": "1/60110AK-0-000-N0S01",  "flame": "64",  "qty": "384",  "status": "4/4 13:32"}, 
+                { "id": 7, "time": "9:15",  "product_no": "448/20055AK-0-000-N0S01",  "flame": "33",  "qty": "132",  "status": "OK"}, 
+                { "id": 8, "time": "9:15",  "product_no": "448/20055AK-0-000-N0S01",  "flame": "33",  "qty": "132",  "status": "OK"}, 
+                { "id": 9, "time": "9:15",  "product_no": "1H1/0160AK-3-000-N0S01",  "flame": "128",  "qty": "1536",  "status": ""}, 
+                { "id": 10, "time": "9:15",  "product_no": "0B34490AK-1-000-N0S01",  "flame": "75",  "qty": "1500",  "status": "OK"}, 
+                { "id": 11, "time": "9:30",  "product_no": "1H1/0087/88AK-0-000-N1S01",  "flame": "70",  "qty": "840",  "status": "OK"}, 
+                { "id": 12, "time": "9:30",  "product_no": "1H1/0159AK-3-000-N0S01",  "flame": "128",  "qty": "1536",  "status": ""}, 
+              ];
+              this.pendings = [
+                { "id": 1, "time": "",  "product_no": "1H1/0160AK-3-000-N0S01",  "flame": "128",  "qty": "1536",  "status": ""}, 
+                { "id": 2, "time": "",  "product_no": "0B34490AK-1-000-N0S01",  "flame": "75",  "qty": "1500",  "status": "OK"}, 
+              ];
+
+
+            },
+            mounted: function() {
+              new Sortable(
+                document.querySelector('#dragTable'),
+                {
+                  group: 'shared',
+                  draggable: '.sortableRow',
+                  handle: '.sortHandle',
+                  onEnd: this.dragReorder
+                }
+              );
+              new Sortable(
+                document.querySelector('#dragTable2'),
+                {
+                  group: 'shared',
+                  draggable: '.sortableRow',
+                  handle: '.sortHandle',
+                  onEnd: this.dragReorder2
+                }
+              )
+
+            },
+            methods: {
+/*
+              itemKey (item) {
+                if (!this.itemKeys.has(item)) this.itemKeys.set(item, ++this.currentItemKey)
+                return this.itemKeys.get(item)
+              },
+*/
+              dragReorder ({oldIndex, newIndex}) {
+                const movedItem = this.plans.splice(oldIndex, 1)[0]
+                this.plans.splice(newIndex, 0, movedItem)
+
+//                console.table(this.plans);
+              },
+              dragReorder2 (evt) {
+                const movedItem = this.pendings.splice(evt.oldIndex, 1)[0]
+                this.pendings.splice(evt.newIndex, 0, movedItem)
+
+                console.log(evt);
+              },
+
+              orderNumber (item) {
+                return this.plans.indexOf(item) + 1
+              },
+
+              addPendingList (index) {
+                this.pendings.push(this.plans[index]);
+                this.plans.splice(index, 1);
+              },
+              removePendingList (index) {
+                this.plans.push(this.pendings[index]);
+                this.pendings.splice(index, 1);
+              }
+
+            }
+        })
+    </script>
+  </body>
+</html>
