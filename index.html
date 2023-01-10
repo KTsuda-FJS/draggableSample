@@ -18,7 +18,7 @@
                 >
                   <v-card-actions>
                     <p class="text-h3 text--primary">
-                      {{this.date}} DISA D
+                      {{this.date}} 23Z DISA D
                     </p>
                     <v-btn
                       class="ml-4 mt-n3"
@@ -57,20 +57,30 @@
                               mdi-arrow-right
                             </v-icon>
                           </th>
+<!--
                           <th>
                             時刻
+                          </th>
+-->
+                          <th style="width:5em;">
+                            &nbsp;
                           </th>
                           <th class="text-left">
                             部番
                           </th>
-                          <th>
+                          <th style="width:8em;">
                             枠数
                           </th>
-                          <th>
+                          <th style="width:9em;">
                             数量
                           </th>
                           <th>
                             中子状況
+                          </th>
+                          <th>
+                            <v-icon>
+                              mdi-content-duplicate
+                            </v-icon>
                           </th>
                         </tr>
                       </thead>
@@ -87,14 +97,29 @@
                               depressed
                               x-small
                               color="error"
-                              @click="addPendingList(index)"
+                              @click="removePlanList(index)"
                             >
                               <v-icon>
                                 mdi-arrow-right
                               </v-icon>
                             </v-btn>
                           </td>
+<!--
                           <td>{{ plan.time }}</td>
+-->
+                          <td>
+                            <span v-show="plan.class">
+                              <v-chip
+                                color="cyan"
+                                text-color="white"
+                                x-small
+                              >
+                                {{ plan.class }}
+                              </v-chip>
+                            </span>
+                          </td>
+
+
                           <td>{{ plan.product_no }}</td>
                           <td>
                             <v-text-field
@@ -115,6 +140,19 @@
                             ></v-text-field>
                           </td>
                           <td>{{ plan.status }}</td>
+                          <td>
+                            <v-btn
+                              class=""
+                              fab
+                              depressed
+                              x-small
+                              @click.stop="dialogSplit = true"
+                            >
+                              <v-icon>
+                                mdi-content-duplicate
+                              </v-icon>
+                            </v-btn>
+                          </td>
                         </tr>
                       </tbody>
                     </template>
@@ -205,6 +243,9 @@
                                 </v-icon>
                               </th>
                               <th class="text-left">
+                                &nbsp;
+                              </th>
+                              <th class="text-left">
                                 部番
                               </th>
                               <th class="text-right">
@@ -215,7 +256,39 @@
                               </th>
                             </tr>
                           </thead>
-                          <tbody>
+                          <tbody id="dragTable3">
+                            <tr
+                              v-for="(plan, index) in addOns"
+                              :key="plan.id"
+                              class="sortableRow sortHandle handle"
+                            >
+                              <td>
+                                <v-btn
+                                  class=""
+                                  fab
+                                  depressed
+                                  x-small
+                                  color="success"
+                                  @click="removeAddOnList(index)"
+                                >
+                                  <v-icon>
+                                    mdi-arrow-left
+                                  </v-icon>
+                                </v-btn>
+                              </td>
+                              <td>
+                                <v-chip
+                                  color="cyan"
+                                  text-color="white"
+                                  x-small
+                                >
+                                  {{ plan.class }}
+                                </v-chip>
+                              </td>
+                              <td>{{ plan.product_no }}</td>
+                              <td class="text-right">{{ plan.flame }}</td>
+                              <td class="text-right">{{ plan.qty }}</td>
+                            </tr>
                           </tbody>
                         </template>
                       </v-simple-table>
@@ -225,6 +298,95 @@
 
               </v-col>
             </v-row>
+
+            <v-dialog
+              v-model="dialogSplit"
+              width="33%"
+            >
+              <v-card>
+                <v-card-title>
+                  分割する枠数または数量を指定してください。
+                </v-card-title>
+                <v-card-subtitle>
+                </v-card-subtitle>
+                <v-card-text>
+                  <v-container>
+                    <v-row>
+                      <v-col
+                        cols="2"
+                      >
+                        <v-text-field
+                          label="枠数"
+                        ></v-text-field>
+                      </v-col>
+                      <v-col
+                        cols="2"
+                      >
+                        <v-text-field
+                          label="数量"
+                        ></v-text-field>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                </v-card-text>
+
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+
+                  <v-btn
+                    color=""
+                    text
+                    @click="dialogSplit = false"
+                  >
+                    キャンセル
+                  </v-btn>
+
+                  <v-btn
+                    color="primary"
+                    text
+                    @click="dialogSplit = false"
+                  >
+                    分割
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+
+            <v-dialog
+              v-model="dialogIntegration"
+              width="33%"
+            >
+              <v-card>
+                <v-card-title>
+                  同じ部番です。統合しますか？
+                </v-card-title>
+                <v-card-subtitle>
+                </v-card-subtitle>
+                <v-card-text>
+                </v-card-text>
+
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+
+                  <v-btn
+                    color=""
+                    text
+                    @click="dialogIntegration = false"
+                  >
+                    閉じる
+                  </v-btn>
+
+                  <v-btn
+                    color="primary"
+                    text
+                    @click="dialogIntegration = false"
+                  >
+                    はい
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+
           </v-container>
         </v-main>
       </v-app>
@@ -255,29 +417,35 @@
               date: ( moment().format('YYYY/MM/DD(ddd)') ),
               plans: [],
               pendings: [],
-              dialog: false,
+              addOns: [],
+              dialogSplit: false,
+              dialogIntegration: false,
               itemKeys: new WeakMap(),
               currentItemKey: 0,
             },
             created: function () {
 
               this.plans = [  //TODO シートから取得
-                { "id": 1, "time": "9:00",  "product_no": "0B39767AK-1/2-000-N0S01",  "flame": "96",  "qty": "1536",  "status": "OK"}, 
-                { "id": 2, "time": "9:00",  "product_no": "448/20069AK-0-000-N0S01",  "flame": "33",  "qty": "132",  "status": ""}, 
-                { "id": 3, "time": "9:00",  "product_no": "0B38281AK-1/2-000-N0S01",  "flame": "64",  "qty": "1280",  "status": "OK"}, 
-                { "id": 4, "time": "9:00",  "product_no": "448/20038AK-0-000-N0S01",  "flame": "33",  "qty": "132",  "status": "4/4 18:33"}, 
-                { "id": 5, "time": "9:15",  "product_no": "1H1/0087/88AK-0-000-N1S01",  "flame": "70",  "qty": "840",  "status": "OK"}, 
-                { "id": 6, "time": "9:15",  "product_no": "1/60110AK-0-000-N0S01",  "flame": "64",  "qty": "384",  "status": "4/4 13:32"}, 
-                { "id": 7, "time": "9:15",  "product_no": "448/20055AK-0-000-N0S01",  "flame": "33",  "qty": "132",  "status": "OK"}, 
-                { "id": 8, "time": "9:15",  "product_no": "448/20055AK-0-000-N0S01",  "flame": "33",  "qty": "132",  "status": "OK"}, 
-                { "id": 9, "time": "9:15",  "product_no": "1H1/0160AK-3-000-N0S01",  "flame": "128",  "qty": "1536",  "status": ""}, 
-                { "id": 10, "time": "9:15",  "product_no": "0B34490AK-1-000-N0S01",  "flame": "75",  "qty": "1500",  "status": "OK"}, 
-                { "id": 11, "time": "9:30",  "product_no": "1H1/0087/88AK-0-000-N1S01",  "flame": "70",  "qty": "840",  "status": "OK"}, 
-                { "id": 12, "time": "9:30",  "product_no": "1H1/0159AK-3-000-N0S01",  "flame": "128",  "qty": "1536",  "status": ""}, 
+                { "id": 1, "time": "9:00",  "product_no": "0B39767AK-1/2-000-N0S01",  "flame": "96",  "qty": "1536",  "status": "OK", "class": ""}, 
+                { "id": 2, "time": "9:00",  "product_no": "448/20069AK-0-000-N0S01",  "flame": "33",  "qty": "132",  "status": "", "class": ""}, 
+                { "id": 3, "time": "9:00",  "product_no": "0B38281AK-1/2-000-N0S01",  "flame": "64",  "qty": "1280",  "status": "OK", "class": ""}, 
+                { "id": 4, "time": "9:00",  "product_no": "448/20038AK-0-000-N0S01",  "flame": "33",  "qty": "132",  "status": "4/4 18:33", "class": ""}, 
+                { "id": 5, "time": "9:15",  "product_no": "1H1/0087/88AK-0-000-N1S01",  "flame": "70",  "qty": "840",  "status": "OK", "class": ""}, 
+                { "id": 6, "time": "9:15",  "product_no": "1/60110AK-0-000-N0S01",  "flame": "64",  "qty": "384",  "status": "4/4 13:32", "class": ""}, 
+                { "id": 7, "time": "9:15",  "product_no": "448/20055AK-0-000-N0S01",  "flame": "33",  "qty": "132",  "status": "OK", "class": ""}, 
+                { "id": 8, "time": "9:15",  "product_no": "448/20055AK-0-000-N0S01",  "flame": "33",  "qty": "132",  "status": "OK", "class": ""}, 
+                { "id": 9, "time": "9:15",  "product_no": "1H1/0160AK-3-000-N0S01",  "flame": "128",  "qty": "1536",  "status": "", "class": ""}, 
+                { "id": 10, "time": "9:15",  "product_no": "0B34490AK-1-000-N0S01",  "flame": "75",  "qty": "1500",  "status": "OK", "class": ""}, 
+                { "id": 11, "time": "9:30",  "product_no": "1H1/0087/88AK-0-000-N1S01",  "flame": "70",  "qty": "840",  "status": "OK", "class": ""}, 
+                { "id": 12, "time": "9:30",  "product_no": "1H1/0159AK-3-000-N0S01",  "flame": "128",  "qty": "1536",  "status": "", "class": ""}, 
               ];
               this.pendings = [
-                { "id": 1, "time": "",  "product_no": "1H1/0160AK-3-000-N0S01",  "flame": "128",  "qty": "1536",  "status": ""}, 
-                { "id": 2, "time": "",  "product_no": "0B34490AK-1-000-N0S01",  "flame": "75",  "qty": "1500",  "status": "OK"}, 
+                { "id": 1, "time": "",  "product_no": "1H1/0160AK-3-000-N0S01",  "flame": "128",  "qty": "1536",  "status": "", "class": ""}, 
+                { "id": 2, "time": "",  "product_no": "0B34490AK-1-000-N0S01",  "flame": "75",  "qty": "1500",  "status": "OK", "class": ""}, 
+              ];
+              this.addOns = [
+                { "id": 1, "time": "",  "product_no": "1H1/0160AK-3-000-N0S01",  "flame": "128",  "qty": "1536",  "status": "", "class": "試作"}, 
+                { "id": 2, "time": "",  "product_no": "0B34490AK-1-000-N0S01",  "flame": "75",  "qty": "1500",  "status": "OK", "class": "先行"}, 
               ];
 
 
@@ -286,7 +454,7 @@
               new Sortable(
                 document.querySelector('#dragTable'),
                 {
-                  group: 'shared',
+//                  group: 'shared',
                   draggable: '.sortableRow',
                   handle: '.sortHandle',
                   onEnd: this.dragReorder
@@ -295,10 +463,18 @@
               new Sortable(
                 document.querySelector('#dragTable2'),
                 {
-                  group: 'shared',
+//                  group: 'shared',
                   draggable: '.sortableRow',
                   handle: '.sortHandle',
                   onEnd: this.dragReorder2
+                }
+              );
+              new Sortable(
+                document.querySelector('#dragTable3'),
+                {
+                  draggable: '.sortableRow',
+                  handle: '.sortHandle',
+                  onEnd: this.dragReorder3
                 }
               )
 
@@ -311,14 +487,21 @@
               },
 */
               dragReorder ({oldIndex, newIndex}) {
+                if(this.plans[oldIndex].product_no == this.plans[newIndex].product_no) {
+                  this.dialogIntegration = true;
+                }
+                //TODO 処理をダイアログの「はい・いいえ」に移動
                 const movedItem = this.plans.splice(oldIndex, 1)[0]
                 this.plans.splice(newIndex, 0, movedItem)
 
-//                console.table(this.plans);
               },
               dragReorder2 (evt) {
                 const movedItem = this.pendings.splice(evt.oldIndex, 1)[0]
                 this.pendings.splice(evt.newIndex, 0, movedItem)
+              },
+              dragReorder3 (evt) {
+                const movedItem = this.addOns.splice(evt.oldIndex, 1)[0]
+                this.addOns.splice(evt.newIndex, 0, movedItem)
 
                 console.log(evt);
               },
@@ -331,9 +514,31 @@
                 this.pendings.push(this.plans[index]);
                 this.plans.splice(index, 1);
               },
+
+              splitPlan() {
+                //TODO
+              },
+
+              removePlanList (index) {
+                switch (this.plans[index].class) {
+                  case "試作":
+                  case "先行":
+                    this.addOns.push(this.plans[index]);
+                    break;
+                  default:
+                    this.pendings.push(this.plans[index]);
+                    break;
+                }
+                this.plans.splice(index, 1);
+              },
+
               removePendingList (index) {
                 this.plans.push(this.pendings[index]);
                 this.pendings.splice(index, 1);
+              },
+              removeAddOnList (index) {
+                this.plans.push(this.addOns[index]);
+                this.addOns.splice(index, 1);
               }
 
             }
