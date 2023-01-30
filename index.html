@@ -18,7 +18,7 @@
                 >
                   <v-card-actions>
                     <p class="text-h3 text--primary">
-                      {{this.date}} 23Z DISA D
+                      {{this.date}} DISA D
                     </p>
                     <v-btn
                       class="ml-4 mt-n3"
@@ -29,12 +29,14 @@
                       <v-icon>mdi-reload</v-icon>
                     </v-btn>
                     <v-spacer></v-spacer>
+                    <span class="text-h5 mr-4">{{totalInstructionFlame}} / 2400</span>
                     <v-btn
                       rounded
-                      color="primary"
+                      color="warning"
                       large
+                     @click="dialogRegistConfirm=true; log(plans)"
                     >
-                      登録
+                      確認
                     </v-btn>
                   </v-card-actions>
                 </v-card>
@@ -61,26 +63,27 @@
                           <th>
                             時刻
                           </th>
--->
                           <th style="width:5em;">
                             &nbsp;
+                          </th>
+-->
+                          <th class="text-left">
+                            ロットNo
                           </th>
                           <th class="text-left">
                             部番
                           </th>
-                          <th style="width:8em;">
+                          <th style="width:12em;">
                             枠数
                           </th>
-                          <th style="width:9em;">
+                          <th class="text-right">
                             数量
                           </th>
                           <th>
                             中子状況
                           </th>
                           <th>
-                            <v-icon>
-                              mdi-content-duplicate
-                            </v-icon>
+                            確定
                           </th>
                         </tr>
                       </thead>
@@ -106,7 +109,6 @@
                           </td>
 <!--
                           <td>{{ plan.time }}</td>
--->
                           <td>
                             <span v-show="plan.class">
                               <v-chip
@@ -118,40 +120,35 @@
                               </v-chip>
                             </span>
                           </td>
+-->
 
+                          <td>{{ plan.lot_no }}</td>
 
-                          <td>{{ plan.product_no }}</td>
                           <td>
-                            <v-text-field
-                              class="my-2"
-                              dense
-                              outlined
-                              hide-details=true
-                              v-model='plan.flame'
-                            ></v-text-field>
+                            <v-badge
+                              :content="plan.class"
+                              :value="plan.class"
+                              color="cyan"
+                            >
+                            <span class="text-h6">{{ plan.product_no }}</span>
+                            </v-badge>
                           </td>
                           <td>
                             <v-text-field
                               class="my-2"
                               dense
                               outlined
+                              v-model='plan.instructionFlame'
                               hide-details=true
-                              v-model='plan.qty'
+                              :suffix="'/ ' + plan.flame"
                             ></v-text-field>
                           </td>
+                          <td class="text-right">{{ plan.qty }}</td>
                           <td>{{ plan.status }}</td>
                           <td>
-                            <v-btn
-                              class=""
-                              fab
-                              depressed
-                              x-small
-                              @click.stop="dialogSplit = true"
-                            >
-                              <v-icon>
-                                mdi-content-duplicate
-                              </v-icon>
-                            </v-btn>
+                            <v-checkbox
+                              v-model='plan.checked'
+                            ></v-checkbox>
                           </td>
                         </tr>
                       </tbody>
@@ -300,53 +297,63 @@
             </v-row>
 
             <v-dialog
-              v-model="dialogSplit"
-              width="33%"
+              v-model="dialogRegistConfirm"
+              scrollable
             >
               <v-card>
                 <v-card-title>
-                  分割する枠数または数量を指定してください。
+                  登録する内容に間違いないか確認してください。
                 </v-card-title>
                 <v-card-subtitle>
                 </v-card-subtitle>
-                <v-card-text>
-                  <v-container>
-                    <v-row>
-                      <v-col
-                        cols="2"
+                <v-simple-table>
+                  <template v-slot:default>
+                    <thead>
+                      <tr>
+                        <th>
+                          ロットNo
+                        </th>
+                        <th>
+                          部番
+                        </th>
+                        <th class="text-right">
+                          枠数
+                        </th>
+                        <th class="text-right">
+                          数量
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        v-for="(plan, index) in plans.filter(plan => plan.checked)"
+                        :key="plan.id"
                       >
-                        <v-text-field
-                          label="枠数"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col
-                        cols="2"
-                      >
-                        <v-text-field
-                          label="数量"
-                        ></v-text-field>
-                      </v-col>
-                    </v-row>
-                  </v-container>
-                </v-card-text>
+                        <td>{{ plan.lot_no }}</td>
+                        <td><span class="text-h6">{{ plan.product_no }}</span></td>
+                        <td class="text-right"><span class="text-h6">{{ plan.instructionFlame }}</span></td>
+                        <td class="text-right">{{ plan.qty }}</td>
+                      </tr>
+                    </tbody>
+                  </template>
+                </v-simple-table>
 
                 <v-card-actions>
-                  <v-spacer></v-spacer>
 
                   <v-btn
                     color=""
-                    text
-                    @click="dialogSplit = false"
+                    large
+                    @click="dialogRegistConfirm = false"
                   >
                     キャンセル
                   </v-btn>
-
+                  <v-spacer></v-spacer>
                   <v-btn
                     color="primary"
-                    text
-                    @click="dialogSplit = false"
+                    large
+                    @click="dialogRegistConfirm = false"
                   >
-                    分割
+                    登録
                   </v-btn>
                 </v-card-actions>
               </v-card>
@@ -418,7 +425,7 @@
               plans: [],
               pendings: [],
               addOns: [],
-              dialogSplit: false,
+              dialogRegistConfirm: false,
               dialogIntegration: false,
               itemKeys: new WeakMap(),
               currentItemKey: 0,
@@ -426,26 +433,26 @@
             created: function () {
 
               this.plans = [  //TODO シートから取得
-                { "id": 1, "time": "9:00",  "product_no": "0B39767AK-1/2-000-N0S01",  "flame": "96",  "qty": "1536",  "status": "OK", "class": ""}, 
-                { "id": 2, "time": "9:00",  "product_no": "448/20069AK-0-000-N0S01",  "flame": "33",  "qty": "132",  "status": "", "class": ""}, 
-                { "id": 3, "time": "9:00",  "product_no": "0B38281AK-1/2-000-N0S01",  "flame": "64",  "qty": "1280",  "status": "OK", "class": ""}, 
-                { "id": 4, "time": "9:00",  "product_no": "448/20038AK-0-000-N0S01",  "flame": "33",  "qty": "132",  "status": "4/4 18:33", "class": ""}, 
-                { "id": 5, "time": "9:15",  "product_no": "1H1/0087/88AK-0-000-N1S01",  "flame": "70",  "qty": "840",  "status": "OK", "class": ""}, 
-                { "id": 6, "time": "9:15",  "product_no": "1/60110AK-0-000-N0S01",  "flame": "64",  "qty": "384",  "status": "4/4 13:32", "class": ""}, 
-                { "id": 7, "time": "9:15",  "product_no": "448/20055AK-0-000-N0S01",  "flame": "33",  "qty": "132",  "status": "OK", "class": ""}, 
-                { "id": 8, "time": "9:15",  "product_no": "448/20055AK-0-000-N0S01",  "flame": "33",  "qty": "132",  "status": "OK", "class": ""}, 
-                { "id": 9, "time": "9:15",  "product_no": "1H1/0160AK-3-000-N0S01",  "flame": "128",  "qty": "1536",  "status": "", "class": ""}, 
-                { "id": 10, "time": "9:15",  "product_no": "0B34490AK-1-000-N0S01",  "flame": "75",  "qty": "1500",  "status": "OK", "class": ""}, 
-                { "id": 11, "time": "9:30",  "product_no": "1H1/0087/88AK-0-000-N1S01",  "flame": "70",  "qty": "840",  "status": "OK", "class": ""}, 
-                { "id": 12, "time": "9:30",  "product_no": "1H1/0159AK-3-000-N0S01",  "flame": "128",  "qty": "1536",  "status": "", "class": ""}, 
+                { "id": 1, "lot_no": "23Z",  "product_no": "0B39767AK-1/2-000-N0S01", "instructionFlame": "96", "flame": "96",  "qty": "1536",  "status": "OK", "class": "", "checked":false}, 
+                { "id": 2, "lot_no": "23Z",  "product_no": "448/20069AK-0-000-N0S01", "instructionFlame": "33", "flame": "33",  "qty": "132",  "status": "", "class": "", "checked":false}, 
+                { "id": 3, "lot_no": "23Z",  "product_no": "0B38281AK-1/2-000-N0S01", "instructionFlame": "64", "flame": "64",  "qty": "1280",  "status": "OK", "class": "", "checked":false}, 
+                { "id": 4, "lot_no": "23Z",  "product_no": "448/20038AK-0-000-N0S01", "instructionFlame": "33", "flame": "33",  "qty": "132",  "status": "4/4 18:33", "class": "", "checked":false}, 
+                { "id": 5, "lot_no": "23Z",  "product_no": "1H1/0087/88AK-0-000-N1S01", "instructionFlame": "70", "flame": "70",  "qty": "840",  "status": "OK", "class": "", "checked":false}, 
+                { "id": 6, "lot_no": "23Z",  "product_no": "1/60110AK-0-000-N0S01", "instructionFlame": "64", "flame": "64",  "qty": "384",  "status": "4/4 13:32", "class": "", "checked":false}, 
+                { "id": 7, "lot_no": "23Z",  "product_no": "448/20055AK-0-000-N0S01", "instructionFlame": "33", "flame": "33",  "qty": "132",  "status": "OK", "class": "", "checked":false}, 
+                { "id": 8, "lot_no": "23Z",  "product_no": "448/20055AK-0-000-N0S01", "instructionFlame": "33", "flame": "33",  "qty": "132",  "status": "OK", "class": "", "checked":false}, 
+                { "id": 9, "lot_no": "23Z",  "product_no": "1H1/0160AK-3-000-N0S01", "instructionFlame": "128", "flame": "128",  "qty": "1536",  "status": "", "class": "", "checked":false}, 
+                { "id": 10, "lot_no": "23Z",  "product_no": "0B34490AK-1-000-N0S01", "instructionFlame": "75", "flame": "75",  "qty": "1500",  "status": "OK", "class": "", "checked":false}, 
+                { "id": 11, "lot_no": "23Z",  "product_no": "1H1/0087/88AK-0-000-N1S01", "instructionFlame": "70", "flame": "70",  "qty": "840",  "status": "OK", "class": "", "checked":false}, 
+                { "id": 12, "lot_no": "23Z",  "product_no": "1H1/0159AK-3-000-N0S01", "instructionFlame": "128", "flame": "128",  "qty": "1536",  "status": "", "class": "", "checked":false}, 
               ];
               this.pendings = [
-                { "id": 1, "time": "",  "product_no": "1H1/0160AK-3-000-N0S01",  "flame": "128",  "qty": "1536",  "status": "", "class": ""}, 
-                { "id": 2, "time": "",  "product_no": "0B34490AK-1-000-N0S01",  "flame": "75",  "qty": "1500",  "status": "OK", "class": ""}, 
+                { "id": 1, "lot_no": "239",  "product_no": "1H1/0160AK-3-000-N0S01", "instructionFlame": "128", "flame": "128",  "qty": "1536",  "status": "", "class": "", "checked":false}, 
+                { "id": 2, "lot_no": "23W",  "product_no": "0B34490AK-1-000-N0S01", "instructionFlame": "75", "flame": "75",  "qty": "1500",  "status": "OK", "class": "", "checked":false}, 
               ];
               this.addOns = [
-                { "id": 1, "time": "",  "product_no": "1H1/0160AK-3-000-N0S01",  "flame": "128",  "qty": "1536",  "status": "", "class": "試作"}, 
-                { "id": 2, "time": "",  "product_no": "0B34490AK-1-000-N0S01",  "flame": "75",  "qty": "1500",  "status": "OK", "class": "先行"}, 
+                { "id": 1, "lot_no": "",  "product_no": "1H1/0160AK-3-000-N0S01", "instructionFlame": "128", "flame": "128",  "qty": "1536",  "status": "", "class": "試作", "checked":false}, 
+                { "id": 2, "lot_no": "",  "product_no": "0B34490AK-1-000-N0S01", "instructionFlame": "75", "flame": "75",  "qty": "1500",  "status": "OK", "class": "先行", "checked":false}, 
               ];
 
 
@@ -480,6 +487,10 @@
 
             },
             methods: {
+              log (e) {
+                console.log(e);
+              },
+
 /*
               itemKey (item) {
                 if (!this.itemKeys.has(item)) this.itemKeys.set(item, ++this.currentItemKey)
@@ -487,7 +498,7 @@
               },
 */
               dragReorder ({oldIndex, newIndex}) {
-                if(this.plans[oldIndex].product_no == this.plans[newIndex].product_no) {
+                if(this.plans[oldIndex].id != this.plans[newIndex].id && this.plans[oldIndex].product_no == this.plans[newIndex].product_no) {
                   this.dialogIntegration = true;
                 }
                 //TODO 処理をダイアログの「はい・いいえ」に移動
@@ -539,9 +550,29 @@
               removeAddOnList (index) {
                 this.plans.push(this.addOns[index]);
                 this.addOns.splice(index, 1);
-              }
+              },
+            },
 
+            computed: {
+              totalInstructionFlame () {
+                return this.plans.reduce((prev, plan) => {
+                        return prev + (plan.checked ? ( Number.isNaN(plan.instructionFlame) ? 0 : parseInt(plan.instructionFlame) ) : 0 );
+                      }, 0);
+              }
+            },
+/**
+            watch: {
+                "plans": {
+                    handler: function () {
+                        this.totalInstructionFlame = this.plans.reduce((prev, plan) => {
+                          return prev + (plan.checked ? parseInt(plan.instructionFlame) : 0);
+                        }, 0);
+                    },
+                    deep: true,
+                    immediate: false
+                }
             }
+*/
         })
     </script>
   </body>
