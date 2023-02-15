@@ -4,6 +4,7 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
   </head>
   <body>
     <div id="app">
@@ -91,9 +92,9 @@
                         <tr
                           v-for="(plan, index) in plans"
                           :key="plan.id"
-                          class="sortableRow sortHandle handle"
+                          class="sortableRow handle"
                         >
-                          <td>
+                          <td class="sortHandle">
                             <v-btn
                               class=""
                               fab
@@ -122,9 +123,9 @@
                           </td>
 -->
 
-                          <td>{{ plan.lot_no }}</td>
+                          <td class="sortHandle">{{ plan.lot_no }}</td>
 
-                          <td>
+                          <td class="sortHandle">
                             <v-badge
                               :content="plan.class"
                               :value="plan.class"
@@ -133,7 +134,7 @@
                             <span class="text-h6">{{ plan.product_no }}</span>
                             </v-badge>
                           </td>
-                          <td>
+                          <td class="sortHandle">
                             <v-text-field
                               class="my-2"
                               dense
@@ -141,10 +142,11 @@
                               v-model='plan.instructionFlame'
                               hide-details=true
                               :suffix="'/ ' + plan.flame"
+                              @change="partlyRemovePlanList(index)"
                             ></v-text-field>
                           </td>
-                          <td class="text-right">{{ plan.qty }}</td>
-                          <td>{{ plan.status }}</td>
+                          <td class="text-right sortHandle">{{ plan.qty }}</td>
+                          <td class="sortHandle">{{ plan.status }}</td>
                           <td>
                             <v-checkbox
                               v-model='plan.checked'
@@ -210,7 +212,7 @@
                                 </v-btn>
                               </td>
                               <td>{{ plan.product_no }}</td>
-                              <td class="text-right">{{ plan.flame }}</td>
+                              <td class="text-right">{{ plan.instructionFlame }}</td>
                               <td class="text-right">{{ plan.qty }}</td>
                             </tr>
                           </tbody>
@@ -283,7 +285,7 @@
                                 </v-chip>
                               </td>
                               <td>{{ plan.product_no }}</td>
-                              <td class="text-right">{{ plan.flame }}</td>
+                              <td class="text-right">{{ plan.instructionFlame }}</td>
                               <td class="text-right">{{ plan.qty }}</td>
                             </tr>
                           </tbody>
@@ -531,26 +533,104 @@
               },
 
               removePlanList (index) {
+                // let temporaryArray = Object.assign({}, this.plans[index]);
                 switch (this.plans[index].class) {
                   case "試作":
                   case "先行":
+                    // var i
+                    // for (i = 0; i< this.addOns.length; i++) {
+                    //   if (this.addOns[i].product_no == temporaryArray.product_no && this.addOns[i].lot_no == temporaryArray.lot_no) {
+                    //     this.addOns[i].instructionFlame = this.addOns[i].flame;
+                    //     break;
+                    //     }
+                    //   }
+                    // if (i == this.addOns.length) {
+                    //   temporaryArray.instructionFlame = temporaryArray.flame;
+                    //   this.addOns.push(temporaryArray);
+                    // }
                     this.addOns.push(this.plans[index]);
                     break;
                   default:
+                    // var i
+                    // for (i = 0; i< this.pendings.length; i++) {
+                    //   if (this.pendings[i].product_no == temporaryArray.product_no && this.pendings[i].lot_no == temporaryArray.lot_no) {
+                    //     this.pendings[i].instructionFlame = this.pendings[i].flame;
+                    //     break;
+                    //     }
+                    // }
+                    // if (i == this.pendings.length) {
+                    //   temporaryArray.instructionFlame = temporaryArray.flame;
+                    //   this.pendings.push(temporaryArray);
+                    // }
                     this.pendings.push(this.plans[index]);
                     break;
                 }
                 this.plans.splice(index, 1);
               },
 
+              partlyRemovePlanList (index) {
+                let temporaryArray = Object.assign({}, this.plans[index]);
+                switch (temporaryArray.class) {
+                  case "試作":
+                  case "先行":
+                    for (var i = 0; i< this.addOns.length; i++) {
+                      if (this.addOns[i].product_no == temporaryArray.product_no && this.addOns[i].lot_no == temporaryArray.lot_no) {
+                        this.addOns[i].instructionFlame = temporaryArray.flame - temporaryArray.instructionFlame;
+                        break;
+                      }
+                    }
+                    if (i == this.addOns.length) {
+                      temporaryArray.instructionFlame = temporaryArray.flame - temporaryArray.instructionFlame;
+                      this.addOns.push(temporaryArray);
+                    }
+                    break;
+                  default:
+                    for (var i = 0; i< this.pendings.length; i++) {
+                      if (this.pendings[i].product_no == temporaryArray.product_no && this.pendings[i].lot_no == temporaryArray.lot_no) {
+                        this.pendings[i].instructionFlame = temporaryArray.flame - temporaryArray.instructionFlame;
+                        break;
+                      }
+                    }
+                    if (i == this.pendings.length) {
+                      temporaryArray.instructionFlame = temporaryArray.flame - temporaryArray.instructionFlame;
+                      this.pendings.push(temporaryArray);
+                    }
+                    break;
+                }
+              },
+
               removePendingList (index) {
+                // let temporaryArray = Object.assign({}, this.pendings[index]);
+                // for (var i = 0; i< this.plans.length; i++) {
+                //   if (this.plans[i].product_no == temporaryArray.product_no && this.plans[i].lot_no == temporaryArray.lot_no) {
+                //     this.plans[i].instructionFlame = this.plans[i].flame;
+                //     break;
+                //   }
+                // }
+                // if (i == this.plans.length) {
+                //   temporaryArray.instructionFlame = temporaryArray.flame;
+                //   this.plans.push(temporaryArray);
+                // }
                 this.plans.push(this.pendings[index]);
                 this.pendings.splice(index, 1);
               },
+              
               removeAddOnList (index) {
+                // let temporaryArray = Object.assign({}, this.addOns[index]);
+                // for (var i = 0; i< this.plans.length; i++) {
+                //   if (this.plans[i].product_no == temporaryArray.product_no && this.plans[i].lot_no == temporaryArray.lot_no) {
+                //     this.plans[i].instructionFlame = this.plans[i].flame;
+                //     break;
+                //   }
+                // }
+                // if (i == this.plans.length) {
+                //   temporaryArray.instructionFlame = temporaryArray.flame;
+                //   this.plans.push(temporaryArray);
+                // }
                 this.plans.push(this.addOns[index]);
                 this.addOns.splice(index, 1);
               },
+
             },
 
             computed: {
