@@ -76,7 +76,7 @@
                           <th class="text-left">
                             部番
                           </th>
-                          <th style="width:12em;">
+                          <th style="width:13em;">
                             枠数
                           </th>
                           <th class="text-right">
@@ -139,10 +139,9 @@
                             <span class="text-h4">{{ plan.product_no }}</span>
                             </v-badge>
                           </td>
-<!--
                            <td class="sortHandle">
                             <v-text-field
-                              class="my-2"
+                              class="my-2 text-h6"
                               dense
                               outlined
                               v-model='plan.instructionFlame'
@@ -151,7 +150,7 @@
                               @change="partlyRemovePlanList(index)"
                             ></v-text-field>
                           </td>
- -->
+<!--
                            <td class="sortHandle" nowrap>
                             <v-text-field
                               class="my-2 text-h6"
@@ -166,7 +165,7 @@
                               </template>
                             </v-text-field>
                           </td>
-
+ -->
                            <td class="text-right sortHandle">{{ plan.qty }}</td>
                           <td class="sortHandle">{{ plan.status }}</td>
                           <td>
