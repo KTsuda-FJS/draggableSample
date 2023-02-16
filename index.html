@@ -21,6 +21,7 @@
                     <p class="text-h3 text--primary">
                       {{this.date}} DISA D
                     </p>
+<!--
                     <v-btn
                       class="ml-4 mt-n3"
                       icon
@@ -29,8 +30,9 @@
                     >
                       <v-icon>mdi-reload</v-icon>
                     </v-btn>
+-->
                     <v-spacer></v-spacer>
-                    <span class="text-h5 mr-4">{{totalInstructionFlame}} / 2400</span>
+                    <span>指示枠数:&nbsp;</span><span class="text-h5 mr-4">{{totalInstructionFlame}}</span>
                     <v-btn
                       rounded
                       color="warning"
@@ -45,7 +47,7 @@
             </v-row>
             <v-row>
               <v-col
-                cols="7"
+                cols="8"
               >
                 <v-card
                   outlined
@@ -123,18 +125,22 @@
                           </td>
 -->
 
-                          <td class="sortHandle">{{ plan.lot_no }}</td>
+                          <td class="sortHandle">
+                            <span class="text-h6">{{ plan.lot_no }}</span>
+                          </td>
 
                           <td class="sortHandle">
                             <v-badge
+                              inline
                               :content="plan.class"
                               :value="plan.class"
                               color="cyan"
                             >
-                            <span class="text-h6">{{ plan.product_no }}</span>
+                            <span class="text-h4">{{ plan.product_no }}</span>
                             </v-badge>
                           </td>
-                          <td class="sortHandle">
+<!--
+                           <td class="sortHandle">
                             <v-text-field
                               class="my-2"
                               dense
@@ -145,12 +151,35 @@
                               @change="partlyRemovePlanList(index)"
                             ></v-text-field>
                           </td>
-                          <td class="text-right sortHandle">{{ plan.qty }}</td>
+ -->
+                           <td class="sortHandle" nowrap>
+                            <v-text-field
+                              class="my-2 text-h6"
+                              dense
+                              outlined
+                              v-model='plan.instructionFlame'
+                              hide-details=true
+                              @change="partlyRemovePlanList(index)"
+                            >
+                              <template v-slot:append-outer>
+                                   /&nbsp;{{plan.flame}}
+                              </template>
+                            </v-text-field>
+                          </td>
+
+                           <td class="text-right sortHandle">{{ plan.qty }}</td>
                           <td class="sortHandle">{{ plan.status }}</td>
                           <td>
-                            <v-checkbox
+                            <v-btn-toggle
                               v-model='plan.checked'
-                            ></v-checkbox>
+                            >
+                              <v-btn
+                                large
+                                value="1"
+                              >
+                                <span class="text-h6" v-if='plan.checked'>指示</span><span class="text-h6" v-else>計画</span>
+                              </v-btn>
+                            </v-btn-toggle>
                           </td>
                         </tr>
                       </tbody>
@@ -160,7 +189,7 @@
                 </v-card>
               </v-col>
               <v-col
-                cols="5"
+                cols="4"
               >
                 <v-row>
                   <v-col>
@@ -179,6 +208,9 @@
                                 <v-icon>
                                   mdi-arrow-left
                                 </v-icon>
+                              </th>
+                              <th class="text-left">
+                                ロットNo
                               </th>
                               <th class="text-left">
                                 部番
@@ -211,7 +243,17 @@
                                   </v-icon>
                                 </v-btn>
                               </td>
-                              <td>{{ plan.product_no }}</td>
+                              <td>{{ plan.lot_no }}</td>
+                              <td>
+                                <v-badge
+                                  inline
+                                  :content="plan.class"
+                                  :value="plan.class"
+                                  color="cyan"
+                                >
+                                <span>{{ plan.product_no }}</span>
+                                </v-badge>
+                              </td>
                               <td class="text-right">{{ plan.instructionFlame }}</td>
                               <td class="text-right">{{ plan.qty }}</td>
                             </tr>
@@ -242,7 +284,7 @@
                                 </v-icon>
                               </th>
                               <th class="text-left">
-                                &nbsp;
+                                ロットNo
                               </th>
                               <th class="text-left">
                                 部番
@@ -275,16 +317,17 @@
                                   </v-icon>
                                 </v-btn>
                               </td>
+                              <td>{{ plan.lot_no }}</td>
                               <td>
-                                <v-chip
+                                <v-badge
+                                  inline
+                                  :content="plan.class"
+                                  :value="plan.class"
                                   color="cyan"
-                                  text-color="white"
-                                  x-small
                                 >
-                                  {{ plan.class }}
-                                </v-chip>
+                                <span>{{ plan.product_no }}</span>
+                                </v-badge>
                               </td>
-                              <td>{{ plan.product_no }}</td>
                               <td class="text-right">{{ plan.instructionFlame }}</td>
                               <td class="text-right">{{ plan.qty }}</td>
                             </tr>
