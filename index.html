@@ -45,7 +45,7 @@
                 </v-card>
               </v-col>
             </v-row>
-            <v-row>
+            <v-row dense>
               <v-col
                 cols="8"
               >
@@ -53,11 +53,11 @@
                   outlined
                 >
 
-                  <v-simple-table>
+                  <v-simple-table fixed-header>
                     <template v-slot:default>
                       <thead>
                         <tr>
-                          <th>
+                          <th class="text-center px-1">
                             <v-icon>
                               mdi-arrow-right
                             </v-icon>
@@ -70,23 +70,23 @@
                             &nbsp;
                           </th>
 -->
-                          <th class="text-left">
+                          <th class="text-left px-0">
                             ロットNo
                           </th>
-                          <th class="text-left">
+                          <th class="text-left px-0">
                             部番
                           </th>
-                          <th style="width:13em;">
+                          <th class="px-0" style="width:10em;">
                             枠数
                           </th>
-                          <th class="text-right">
+                          <th class="text-right px-1">
                             数量
                           </th>
-                          <th>
+                          <th class="text-center px-0">
                             中子状況
                           </th>
-                          <th>
-                            確定
+                          <th class="text-center pl-0 pr-1">
+                            指示
                           </th>
                         </tr>
                       </thead>
@@ -96,9 +96,8 @@
                           :key="plan.id"
                           class="sortableRow handle"
                         >
-                          <td class="sortHandle">
+                          <td class="px-1 sortHandle">
                             <v-btn
-                              class=""
                               fab
                               depressed
                               x-small
@@ -125,21 +124,21 @@
                           </td>
 -->
 
-                          <td class="sortHandle">
+                          <td class="px-0 sortHandle">
                             <span class="text-h6">{{ plan.lot_no }}</span>
                           </td>
 
-                          <td class="sortHandle">
+                          <td class="px-0 sortHandle" nowrap>
                             <v-badge
                               inline
                               :content="plan.class"
                               :value="plan.class"
                               color="cyan"
                             >
-                            <span class="text-h4">{{ plan.product_no }}</span>
+                              <span class="text-h4">{{ plan.product_no }}</span>
                             </v-badge>
                           </td>
-                           <td class="sortHandle">
+                           <td class="px-0 sortHandle">
                             <v-text-field
                               class="my-2 text-h6"
                               dense
@@ -156,7 +155,7 @@
                               class="my-2 text-h6"
                               dense
                               outlined
-                              v-model='plan.instructionFlame'
+                              v-model='plan.instructionFlame'a
                               hide-details=true
                               @change="partlyRemovePlanList(index)"
                             >
@@ -166,14 +165,14 @@
                             </v-text-field>
                           </td>
  -->
-                           <td class="text-right sortHandle">{{ plan.qty }}</td>
-                          <td class="sortHandle">{{ plan.status }}</td>
-                          <td>
+                          <td class="px-1 text-h6 text-right sortHandle"><span class="">{{ plan.qty }}</span></td>
+                          <td class="px-0 sortHandle"><span class="">{{ plan.status }}</span></td>
+                          <td class="pl-0 pr-1">
                             <v-btn-toggle
                               v-model='plan.checked'
                             >
                               <v-btn
-                                large
+                                block
                                 value="1"
                               >
                                 <span class="text-h6" v-if='plan.checked'>指示</span><span class="text-h6" v-else>計画</span>
@@ -203,21 +202,21 @@
                         <template v-slot:default>
                           <thead>
                             <tr>
-                              <th>
+                              <th class="px-1 text-center">
                                 <v-icon>
                                   mdi-arrow-left
                                 </v-icon>
                               </th>
-                              <th class="text-left">
+                              <th class="px-0 text-left">
                                 ロットNo
                               </th>
-                              <th class="text-left">
+                              <th class="px-0 text-left">
                                 部番
                               </th>
-                              <th class="text-right">
+                              <th class="px-1 text-right">
                                 枠数
                               </th>
-                              <th class="text-right">
+                              <th class="px-1 text-right">
                                 数量
                               </th>
                             </tr>
@@ -228,7 +227,7 @@
                               :key="plan.product_no"
                               class="sortableRow sortHandle handle"
                             >
-                              <td>
+                              <td class="px-1 text-center">
                                 <v-btn
                                   class=""
                                   fab
@@ -242,8 +241,8 @@
                                   </v-icon>
                                 </v-btn>
                               </td>
-                              <td>{{ plan.lot_no }}</td>
-                              <td>
+                              <td class="px-0">{{ plan.lot_no }}</td>
+                              <td class="px-0">
                                 <v-badge
                                   inline
                                   :content="plan.class"
@@ -253,8 +252,8 @@
                                 <span>{{ plan.product_no }}</span>
                                 </v-badge>
                               </td>
-                              <td class="text-right">{{ plan.instructionFlame }}</td>
-                              <td class="text-right">{{ plan.qty }}</td>
+                              <td class="px-1 text-right">{{ plan.instructionFlame }}</td>
+                              <td class="px-1 text-right">{{ plan.qty }}</td>
                             </tr>
                           </tbody>
                         </template>
@@ -277,21 +276,21 @@
                         <template v-slot:default>
                           <thead>
                             <tr>
-                              <th>
+                              <th class="px-1 text-center">
                                 <v-icon>
                                   mdi-arrow-left
                                 </v-icon>
                               </th>
-                              <th class="text-left">
+                              <th class="px-0 text-left">
                                 ロットNo
                               </th>
-                              <th class="text-left">
+                              <th class="px-0 text-left">
                                 部番
                               </th>
-                              <th class="text-right">
+                              <th class="px-1 text-right">
                                 枠数
                               </th>
-                              <th class="text-right">
+                              <th class="px-1 text-right">
                                 数量
                               </th>
                             </tr>
@@ -302,9 +301,8 @@
                               :key="plan.id"
                               class="sortableRow sortHandle handle"
                             >
-                              <td>
+                              <td class="px-1 text-center">
                                 <v-btn
-                                  class=""
                                   fab
                                   depressed
                                   x-small
@@ -316,8 +314,8 @@
                                   </v-icon>
                                 </v-btn>
                               </td>
-                              <td>{{ plan.lot_no }}</td>
-                              <td>
+                              <td class="px-0">{{ plan.lot_no }}</td>
+                              <td class="px-0">
                                 <v-badge
                                   inline
                                   :content="plan.class"
@@ -327,8 +325,8 @@
                                 <span>{{ plan.product_no }}</span>
                                 </v-badge>
                               </td>
-                              <td class="text-right">{{ plan.instructionFlame }}</td>
-                              <td class="text-right">{{ plan.qty }}</td>
+                              <td class="px-1 text-right">{{ plan.instructionFlame }}</td>
+                              <td class="px-1 text-right">{{ plan.qty }}</td>
                             </tr>
                           </tbody>
                         </template>
@@ -346,7 +344,7 @@
             >
               <v-card>
                 <v-card-title>
-                  登録する内容に間違いないか確認してください。
+                  指示する順番と内容に間違いないか確認してください。
                 </v-card-title>
                 <v-card-subtitle>
                 </v-card-subtitle>
@@ -355,12 +353,15 @@
                     <thead>
                       <tr>
                         <th>
+                          No
+                        </th>
+                        <th>
                           ロットNo
                         </th>
                         <th>
                           部番
                         </th>
-                        <th class="text-right">
+                        <th class="text-right ">
                           枠数
                         </th>
                         <th class="text-right">
@@ -373,12 +374,22 @@
                         v-for="(plan, index) in plans.filter(plan => plan.checked)"
                         :key="plan.id"
                       >
-                        <td>{{ plan.lot_no }}</td>
-                        <td><span class="text-h6">{{ plan.product_no }}</span></td>
-                        <td class="text-right"><span class="text-h6">{{ plan.instructionFlame }}</span></td>
-                        <td class="text-right">{{ plan.qty }}</td>
+                        <td><span class="text-h6">{{ (index+1) }}</span></td>
+                        <td><span class="text-h6">{{ plan.lot_no }}</span></td>
+                        <td><span class="text-h4">{{ plan.product_no }}</span></td>
+                        <td class="text-right"><span class="text-h4">{{ plan.instructionFlame }}</span></td>
+                        <td class="text-right"><span class="text-h6">{{ plan.qty }}</span></td>
                       </tr>
                     </tbody>
+                    <tfoot>
+                      <tr>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td class="text-right"><span class="text-h4">{{ totalInstructionFlame }}</span></td>
+                        <td>&nbsp;</td>
+                      </tr>
+                    </tfoot>
                   </template>
                 </v-simple-table>
 
