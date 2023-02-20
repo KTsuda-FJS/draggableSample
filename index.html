@@ -47,7 +47,10 @@
             </v-row>
             <v-row dense>
               <v-col
-                cols="8"
+                cols="12"
+                xl="8"
+                lg="8"
+                md="12"
               >
                 <v-card
                   outlined
@@ -76,7 +79,7 @@
                           <th class="text-left px-0">
                             部番
                           </th>
-                          <th class="px-0" style="width:10em;">
+                          <th class="px-0" style="min-width: 10em; width: 10em;">
                             枠数
                           </th>
                           <th class="text-right px-1">
@@ -95,6 +98,7 @@
                           v-for="(plan, index) in plans"
                           :key="plan.id"
                           class="sortableRow handle"
+                          :class='( plan.id == 12 ? "yellow lighten-5" : "")'
                         >
                           <td class="px-1 sortHandle">
                             <v-btn
@@ -136,6 +140,9 @@
                               color="cyan"
                             >
                               <span class="text-h5">{{ plan.product_no }}</span>
+<!--
+                              <span class="text-h4">{{ plan.product_no.split('-',3).join('-') }}</span><span class="text-h5">-{{ plan.product_no.split('-',4).slice(-1)[0] }}</span>
+ -->
                             </v-badge>
                           </td>
                            <td class="px-0 sortHandle">
@@ -187,7 +194,10 @@
                 </v-card>
               </v-col>
               <v-col
-                cols="4"
+                cols="12"
+                xl="4"
+                lg="4"
+                md="12"
               >
                 <v-row>
                   <v-col>
@@ -499,7 +509,7 @@
                 { "id": 9, "lot_no": "23Z",  "product_no": "1H1/0160AK-3-000-N0S01", "instructionFlame": "128", "flame": "128",  "qty": "1536",  "status": "", "class": "", "checked":false}, 
                 { "id": 10, "lot_no": "23Z",  "product_no": "0B34490AK-1-000-N0S01", "instructionFlame": "75", "flame": "75",  "qty": "1500",  "status": "OK", "class": "", "checked":false}, 
                 { "id": 11, "lot_no": "23Z",  "product_no": "1H1/0087/88AK-0-000-N1S01", "instructionFlame": "70", "flame": "70",  "qty": "840",  "status": "OK", "class": "", "checked":false}, 
-                { "id": 12, "lot_no": "23Z",  "product_no": "1H1/0159AK-3-000-N0S01", "instructionFlame": "128", "flame": "128",  "qty": "1536",  "status": "", "class": "", "checked":false}, 
+                { "id": 12, "lot_no": "240",  "product_no": "1H1/0159AK-3-000-N0S01", "instructionFlame": "128", "flame": "128",  "qty": "1536",  "status": "", "class": "", "checked":false}, 
               ];
               this.pendings = [
                 { "id": 1, "lot_no": "239",  "product_no": "1H1/0160AK-3-000-N0S01", "instructionFlame": "128", "flame": "128",  "qty": "1536",  "status": "", "class": "", "checked":false}, 
@@ -517,6 +527,7 @@
                 document.querySelector('#dragTable'),
                 {
 //                  group: 'shared',
+                  animation : 150,
                   draggable: '.sortableRow',
                   handle: '.sortHandle',
                   onEnd: this.dragReorder
@@ -664,7 +675,7 @@
                 //   temporaryArray.instructionFlame = temporaryArray.flame;
                 //   this.plans.push(temporaryArray);
                 // }
-                this.plans.push(this.pendings[index]);
+                this.plans.unshift(this.pendings[index]);
                 this.pendings.splice(index, 1);
               },
               
@@ -680,7 +691,7 @@
                 //   temporaryArray.instructionFlame = temporaryArray.flame;
                 //   this.plans.push(temporaryArray);
                 // }
-                this.plans.push(this.addOns[index]);
+                this.plans.unshift(this.addOns[index]);
                 this.addOns.splice(index, 1);
               },
 
@@ -708,5 +719,11 @@
 */
         })
     </script>
+
+    <style lang="scss">
+      .v-data-table tr:hover td {
+          background-color: #eee;
+      }
+    </style>
   </body>
 </html>
